@@ -23,6 +23,7 @@ import { getLogger } from './logger';
 
 export interface MQTTBridgeEvents {
   connected: () => void;
+  reconnected: () => void;
   disconnected: () => void;
   deviceCommand: (nodeId: number, command: DeviceCommand) => void;
   sceneCommand: (sceneId: number, command: 'run') => void;
@@ -39,6 +40,7 @@ export class MQTTBridge extends EventEmitter {
   private config: MQTTConfig;
   private client: mqtt.MqttClient | null = null;
   private connected = false;
+  private hasConnectedOnce = false;
 
   constructor(config: MQTTConfig) {
     super();
@@ -102,10 +104,19 @@ export class MQTTBridge extends EventEmitter {
 
       this.client.on('connect', () => {
         logger.info('Connected to MQTT broker');
+        const wasConnectedBefore = this.hasConnectedOnce;
         this.connected = true;
+        this.hasConnectedOnce = true;
         this.subscribeToCommands();
-        this.emit('connected');
-        resolve();
+
+        if (wasConnectedBefore) {
+          // This is a reconnection - emit reconnected event so daemon can republish
+          logger.info('MQTT reconnected - will republish device states');
+          this.emit('reconnected');
+        } else {
+          this.emit('connected');
+          resolve();
+        }
       });
 
       this.client.on('error', (error) => {
@@ -297,6 +308,8 @@ export class MQTTBridge extends EventEmitter {
    * Publish device state (full JSON)
    */
   async publishDeviceState(state: DeviceState): Promise<void> {
+    const logger = getLogger();
+
     const message: DeviceStateMessage = {
       nodeId: state.nodeId,
       name: state.name,
@@ -312,6 +325,13 @@ export class MQTTBridge extends EventEmitter {
       productType: state.productType,
       lastUpdate: state.lastUpdate.toISOString()
     };
+
+    logger.info('Publishing device state', {
+      nodeId: state.nodeId,
+      name: state.name,
+      position: state.position,
+      connected: this.connected
+    });
 
     // Publish full state
     await this.publish(
@@ -396,8 +416,13 @@ export class MQTTBridge extends EventEmitter {
   ): Promise<void> {
     const logger = getLogger();
 
-    if (!this.client || !this.connected) {
-      logger.warn('Cannot publish, not connected to MQTT broker');
+    if (!this.client) {
+      logger.warn('Cannot publish, MQTT client not initialized', { topic });
+      return;
+    }
+
+    if (!this.connected) {
+      logger.warn('Cannot publish, MQTT not connected - will retry on reconnect', { topic });
       return;
     }
 

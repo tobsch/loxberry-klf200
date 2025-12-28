@@ -144,6 +144,27 @@ export class Daemon {
       logger.info('MQTT connected');
     });
 
+    this.mqtt.on('reconnected', async () => {
+      logger.info('MQTT reconnected - republishing all device states');
+      try {
+        await this.mqtt.publishStatus('online');
+        const devices = this.registry.getAllDevices();
+        const scenes = this.registry.getAllScenes();
+        if (devices.length > 0) {
+          await this.mqtt.publishAllDeviceStates(devices);
+          logger.info(`Republished ${devices.length} device states after reconnect`);
+        }
+        if (scenes.length > 0) {
+          await this.mqtt.publishAllSceneStates(scenes);
+          logger.info(`Republished ${scenes.length} scene states after reconnect`);
+        }
+      } catch (error) {
+        logger.error('Failed to republish states after reconnect', {
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
+    });
+
     this.mqtt.on('disconnected', () => {
       logger.warn('MQTT disconnected');
     });
