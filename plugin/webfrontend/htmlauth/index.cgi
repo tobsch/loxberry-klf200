@@ -11,7 +11,7 @@ use LoxBerry::Web;
 use LoxBerry::JSON;
 
 my $q = CGI->new;
-my $template_title = "Velux KLF-200 MQTT Bridge";
+my $template_title = "Velux MQTT Bridge (KLF-200/KLF-150)";
 my $helplink = "https://github.com/tobsch/loxberry-velux";
 
 # Config file path

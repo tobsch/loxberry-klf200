@@ -1,6 +1,8 @@
 # Architecture Overview
 
-This document describes the technical architecture of the LoxBerry KLF200 Plugin.
+This document describes the technical architecture of the LoxBerry Velux Plugin.
+
+The plugin supports both **Velux KLF-200** and **Velux KLF-150** gateways, which use the same io-homecontrol API protocol.
 
 ## System Context
 
@@ -23,7 +25,7 @@ This document describes the technical architecture of the LoxBerry KLF200 Plugin
 │                           │                 │ MQTT                       │   │
 │                           │                 ▼                            │   │
 │                           │  ┌─────────────────────────────────────┐    │   │
-│                           │  │      KLF200 Plugin (this)           │    │   │
+│                           │  │      Velux Plugin (this)            │    │   │
 │                           │  │                                     │    │   │
 │                           │  │  ┌─────────┐  ┌─────────────────┐   │    │   │
 │                           │  │  │  MQTT   │  │   KLF-200       │   │    │   │
@@ -34,8 +36,8 @@ This document describes the technical architecture of the LoxBerry KLF200 Plugin
 │                                                       │ TLS:51200           │
 │                                                       ▼                     │
 │                                            ┌──────────────────┐             │
-│                                            │     KLF-200      │             │
-│                                            │     Gateway      │             │
+│                                            │  Velux Gateway   │             │
+│                                            │  (KLF-200/150)   │             │
 │                                            └────────┬─────────┘             │
 │                                                     │ io-homecontrol        │
 │                                                     ▼                       │
@@ -50,7 +52,7 @@ This document describes the technical architecture of the LoxBerry KLF200 Plugin
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            KLF200 Plugin                                     │
+│                            Velux Plugin                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
@@ -87,7 +89,7 @@ This document describes the technical architecture of the LoxBerry KLF200 Plugin
 │                                      │                                       │
 │                                      ▼                                       │
 │  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │                   KLF Connection (klf-connection.ts)                   │  │
+│  │               Velux Gateway Connection (klf-connection.ts)             │  │
 │  │                                                                        │  │
 │  │  ┌──────────────────┐    ┌──────────────────┐    ┌─────────────────┐  │  │
 │  │  │   Connection     │    │   Product        │    │   Scene         │  │  │
@@ -110,7 +112,7 @@ This document describes the technical architecture of the LoxBerry KLF200 Plugin
 │  │  /admin/plugins/klf200/index.cgi                                       │  │
 │  │                                                                        │  │
 │  │  Tabs:                                                                 │  │
-│  │    - Settings: KLF-200 connection, MQTT config, options                │  │
+│  │    - Settings: Velux gateway connection, MQTT config, options          │  │
 │  │    - Logs: System journal and plugin log file viewer                   │  │
 │  │                                                                        │  │
 │  │  Features:                                                             │  │
@@ -416,8 +418,8 @@ interface ErrorNotification {
 ### Scalability
 
 The plugin supports:
-- Up to 200 devices (KLF-200 limit)
-- Up to 32 scenes (KLF-200 limit)
-- Single KLF-200 gateway per plugin instance
+- Up to 200 devices (Velux gateway limit)
+- Up to 32 scenes (Velux gateway limit)
+- Single Velux gateway per plugin instance
 
-For multiple KLF-200 gateways, install multiple plugin instances with different prefixes.
+For multiple gateways, install multiple plugin instances with different prefixes.

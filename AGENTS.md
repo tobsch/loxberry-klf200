@@ -1,10 +1,15 @@
 # AI Agent Instructions
 
-This document provides guidance for AI agents working on the LoxBerry KLF200 Plugin project.
+This document provides guidance for AI agents working on the LoxBerry Velux Plugin project.
 
 ## Project Overview
 
-This is a **LoxBerry plugin** written in **Node.js** that bridges a Velux KLF-200 gateway to MQTT. The plugin enables Loxone (and other MQTT-compatible systems) to control Velux windows, blinds, and shutters.
+This is a **LoxBerry plugin** written in **Node.js** that bridges Velux KLF-200 and KLF-150 gateways to MQTT. The plugin enables Loxone (and other MQTT-compatible systems) to control Velux windows, blinds, and shutters.
+
+### Supported Gateways
+
+- **Velux KLF-200** - Fully tested, primary development platform
+- **Velux KLF-150** - Compatible (uses same API protocol)
 
 ### Key Technologies
 
@@ -12,7 +17,7 @@ This is a **LoxBerry plugin** written in **Node.js** that bridges a Velux KLF-20
 |------------|---------|---------|
 | Node.js | 18+ | Runtime environment |
 | TypeScript | 5.x | Primary language (compile to JS) |
-| klf-200-api | 3.x | KLF-200 communication |
+| klf-200-api | 3.x | Velux gateway communication |
 | mqtt | 5.x | MQTT client library |
 | winston | 3.x | Logging framework |
 | Perl/CGI | - | LoxBerry web interface |

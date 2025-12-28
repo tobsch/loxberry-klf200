@@ -1,7 +1,7 @@
 {
   "name": "loxberry-plugin-klf200",
   "version": "1.0.22",
-  "description": "LoxBerry plugin to bridge Velux KLF-200 gateway to MQTT",
+  "description": "LoxBerry plugin to bridge Velux KLF-200/KLF-150 gateways to MQTT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
