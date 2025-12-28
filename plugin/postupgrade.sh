@@ -46,6 +46,11 @@ else
     echo "<ERROR> Directory $HTMLAUTHDIR does not exist!"
 fi
 
+# Add users to systemd-journal group for reading journal logs without sudo
+echo "<INFO> Adding users to systemd-journal group..."
+sudo usermod -a -G systemd-journal loxberry 2>/dev/null || true
+sudo usermod -a -G systemd-journal www-data 2>/dev/null || true
+
 # Create/update systemd service (requires sudo)
 echo "<INFO> Updating systemd service..."
 sudo tee /etc/systemd/system/klf200.service > /dev/null << EOF
@@ -83,14 +88,14 @@ loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl start klf200.service
 loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop klf200.service
 loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart klf200.service
 loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl status klf200.service
-loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl
-loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl *
+loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200.service *
+loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200 *
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl start klf200.service
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop klf200.service
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart klf200.service
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl status klf200.service
-www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl
-www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl *
+www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200.service *
+www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200 *
 SUDOERS
 sudo chmod 440 /etc/sudoers.d/klf200
 echo "<OK> Sudo permissions updated."

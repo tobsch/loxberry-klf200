@@ -251,8 +251,13 @@ if ($tab eq 'settings') {
 
 # Logs tab
 if ($tab eq 'logs') {
-    # Get journal logs for the service (with sudo)
-    my $journal_logs = `sudo /usr/bin/journalctl -u klf200.service -n 100 --no-pager 2>&1` || 'No journal logs available';
+    # Get journal logs for the service (try without sudo first, then with sudo)
+    my $journal_logs = `/usr/bin/journalctl -u klf200.service -n 100 --no-pager 2>&1`;
+    if ($journal_logs =~ /No journal files were found|Permission denied|not allowed/) {
+        # Try with sudo if direct access failed
+        $journal_logs = `sudo -n /usr/bin/journalctl -u klf200.service -n 100 --no-pager 2>&1`;
+    }
+    $journal_logs ||= 'No journal logs available';
     $journal_logs =~ s/</&lt;/g;
     $journal_logs =~ s/>/&gt;/g;
 

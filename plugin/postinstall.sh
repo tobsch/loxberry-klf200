@@ -22,8 +22,17 @@ mkdir -p "$DATADIR" 2>/dev/null || true
 mkdir -p "$LOGDIR" 2>/dev/null || true
 mkdir -p "$BINDIR" 2>/dev/null || true
 
-# Create default configuration if it doesn't exist
-if [ ! -f "$PLUGINDIR/klf200.json" ]; then
+# Restore configuration from backup (if exists from previous uninstall) or create default
+BACKUP_DIR="/tmp/klf200_backup"
+BACKUP_FILE="$BACKUP_DIR/klf200.json"
+
+if [ -f "$BACKUP_FILE" ]; then
+    echo "<INFO> Found configuration backup, restoring..."
+    cp "$BACKUP_FILE" "$PLUGINDIR/klf200.json"
+    chown loxberry:loxberry "$PLUGINDIR/klf200.json"
+    rm -rf "$BACKUP_DIR"
+    echo "<OK> Configuration restored from backup."
+elif [ ! -f "$PLUGINDIR/klf200.json" ]; then
     echo "<INFO> Creating default configuration..."
     cat > "$PLUGINDIR/klf200.json" << 'EOF'
 {
@@ -56,6 +65,8 @@ if [ ! -f "$PLUGINDIR/klf200.json" ]; then
 }
 EOF
     chown loxberry:loxberry "$PLUGINDIR/klf200.json"
+else
+    echo "<INFO> Existing configuration found, keeping it."
 fi
 
 # Install Node.js dependencies
@@ -88,6 +99,11 @@ chmod 755 "$BINDIR"/* 2>/dev/null || true
 chown -R loxberry:loxberry "$PLUGINDIR" 2>/dev/null || true
 chown -R loxberry:loxberry "$DATADIR" 2>/dev/null || true
 chown -R loxberry:loxberry "$LOGDIR" 2>/dev/null || true
+
+# Add users to systemd-journal group for reading journal logs without sudo
+echo "<INFO> Adding users to systemd-journal group..."
+sudo usermod -a -G systemd-journal loxberry 2>/dev/null || true
+sudo usermod -a -G systemd-journal www-data 2>/dev/null || true
 
 # Install and enable systemd service (requires sudo)
 echo "<INFO> Installing systemd service..."
@@ -126,14 +142,14 @@ loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl start klf200.service
 loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop klf200.service
 loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart klf200.service
 loxberry ALL=(ALL) NOPASSWD: /usr/bin/systemctl status klf200.service
-loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl
-loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl *
+loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200.service *
+loxberry ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200 *
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl start klf200.service
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop klf200.service
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart klf200.service
 www-data ALL=(ALL) NOPASSWD: /usr/bin/systemctl status klf200.service
-www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl
-www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl *
+www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200.service *
+www-data ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u klf200 *
 SUDOERS
 sudo chmod 440 /etc/sudoers.d/klf200
 echo "<OK> Sudo permissions configured."
