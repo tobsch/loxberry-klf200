@@ -3,7 +3,7 @@
 A LoxBerry plugin that bridges Velux KLF-200 io-homecontrol gateway to MQTT, enabling control of Velux windows, blinds, and shutters from Loxone and other home automation systems.
 
 **Version**: 1.0.18
-**Author**: Tobias Schlottke <tobias.schlottke@gmail.com>
+**Author**: Tobias Schlottke
 
 ## Features
 
