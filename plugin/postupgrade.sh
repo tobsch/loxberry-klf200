@@ -14,6 +14,27 @@ echo "<INFO> KLF200 Plugin post-upgrade starting..."
 echo "<INFO> PLUGINDIR=$PLUGINDIR"
 echo "<INFO> HTMLAUTHDIR=$HTMLAUTHDIR"
 
+# Check if config exists at start of upgrade
+CONFIG_FILE="$PLUGINDIR/klf200.json"
+if [ -f "$CONFIG_FILE" ]; then
+    echo "<OK> Existing configuration found at $CONFIG_FILE"
+    echo "<INFO> Config content preview: $(head -c 100 "$CONFIG_FILE")"
+else
+    echo "<WARNING> No configuration file found at $CONFIG_FILE"
+    echo "<INFO> Directory contents: $(ls -la "$PLUGINDIR" 2>&1 || echo 'directory does not exist')"
+
+    # Check if backup exists from preuninstall
+    BACKUP_FILE="/tmp/klf200_backup/klf200.json"
+    if [ -f "$BACKUP_FILE" ]; then
+        echo "<INFO> Found backup at $BACKUP_FILE, restoring..."
+        mkdir -p "$PLUGINDIR"
+        cp "$BACKUP_FILE" "$CONFIG_FILE"
+        chown loxberry:loxberry "$CONFIG_FILE"
+        rm -rf "/tmp/klf200_backup"
+        echo "<OK> Configuration restored from backup."
+    fi
+fi
+
 # Stop service during upgrade
 sudo /usr/bin/systemctl stop klf200.service 2>/dev/null || true
 
