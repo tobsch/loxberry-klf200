@@ -95,6 +95,9 @@ Device types: `window`, `blind`, `shutter`, `awning`, `garage`, `gate`, `lock`, 
 | `klf200/devices/{nodeId}/cmd` | `stop` | Stop current movement |
 | `klf200/devices/{nodeId}/cmd` | `0-100` | Set to specific position |
 | `klf200/devices/{nodeId}/position/set` | `0-100` | Set to specific position (alternative) |
+| `klf200/devices/{nodeId}/open` | (any) | Shortcut: open fully |
+| `klf200/devices/{nodeId}/close` | (any) | Shortcut: close fully |
+| `klf200/devices/{nodeId}/stop` | (any) | Shortcut: stop movement |
 | `klf200/scenes/{sceneId}/cmd` | `run` | Execute a scene |
 | `klf200/cmd` | `refresh` | Refresh all device states |
 | `klf200/cmd` | `reconnect` | Force reconnect to gateway |

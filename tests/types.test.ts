@@ -7,41 +7,41 @@ import {
   getDeviceType,
   klfPositionToPercent,
   percentToKlfPosition,
-  PRODUCT_TYPE_MAP
+  ACTUATOR_TYPE_MAP
 } from '../src/types';
 
 describe('Type Utilities', () => {
   describe('getDeviceType', () => {
-    test('should return WINDOW for roof window type', () => {
-      expect(getDeviceType(0x0400)).toBe(DeviceType.WINDOW);
+    test('should return WINDOW for WindowOpener actuator type', () => {
+      expect(getDeviceType(4)).toBe(DeviceType.WINDOW);
     });
 
-    test('should return SHUTTER for roller shutter type', () => {
-      expect(getDeviceType(0x0080)).toBe(DeviceType.SHUTTER);
+    test('should return SHUTTER for RollerShutter actuator type', () => {
+      expect(getDeviceType(2)).toBe(DeviceType.SHUTTER);
     });
 
-    test('should return BLIND for venetian blind type', () => {
-      expect(getDeviceType(0x0040)).toBe(DeviceType.WINDOW); // Interior venetian blind maps to WINDOW
+    test('should return BLIND for VenetianBlind actuator type', () => {
+      expect(getDeviceType(1)).toBe(DeviceType.BLIND);
     });
 
-    test('should return AWNING for awning type', () => {
-      expect(getDeviceType(0x0100)).toBe(DeviceType.AWNING);
+    test('should return AWNING for Awning actuator type', () => {
+      expect(getDeviceType(3)).toBe(DeviceType.AWNING);
     });
 
-    test('should return GARAGE for garage door type', () => {
-      expect(getDeviceType(0x0600)).toBe(DeviceType.GARAGE);
+    test('should return GARAGE for GarageOpener actuator type', () => {
+      expect(getDeviceType(5)).toBe(DeviceType.GARAGE);
     });
 
-    test('should return GATE for gate type', () => {
-      expect(getDeviceType(0x0640)).toBe(DeviceType.GATE);
+    test('should return GATE for GateOpener actuator type', () => {
+      expect(getDeviceType(7)).toBe(DeviceType.GATE);
     });
 
-    test('should return LOCK for window lock type', () => {
-      expect(getDeviceType(0x0500)).toBe(DeviceType.LOCK);
+    test('should return LOCK for Lock actuator type', () => {
+      expect(getDeviceType(9)).toBe(DeviceType.LOCK);
     });
 
     test('should return UNKNOWN for unrecognized type', () => {
-      expect(getDeviceType(0x9999)).toBe(DeviceType.UNKNOWN);
+      expect(getDeviceType(9999)).toBe(DeviceType.UNKNOWN);
     });
   });
 
@@ -125,17 +125,17 @@ describe('Type Utilities', () => {
     });
   });
 
-  describe('PRODUCT_TYPE_MAP', () => {
-    test('should have entries for all documented device types', () => {
-      // Verify we have mappings for common device types
-      expect(PRODUCT_TYPE_MAP[0x0400]).toBeDefined(); // Roof window
-      expect(PRODUCT_TYPE_MAP[0x0080]).toBeDefined(); // Roller shutter
-      expect(PRODUCT_TYPE_MAP[0x0600]).toBeDefined(); // Garage door
-      expect(PRODUCT_TYPE_MAP[0x0640]).toBeDefined(); // Gate
+  describe('ACTUATOR_TYPE_MAP', () => {
+    test('should have entries for common device types', () => {
+      // Verify we have mappings for common actuator types
+      expect(ACTUATOR_TYPE_MAP[4]).toBe(DeviceType.WINDOW);   // WindowOpener
+      expect(ACTUATOR_TYPE_MAP[2]).toBe(DeviceType.SHUTTER);  // RollerShutter
+      expect(ACTUATOR_TYPE_MAP[5]).toBe(DeviceType.GARAGE);   // GarageOpener
+      expect(ACTUATOR_TYPE_MAP[7]).toBe(DeviceType.GATE);     // GateOpener
     });
 
     test('should not return undefined for mapped types', () => {
-      Object.values(PRODUCT_TYPE_MAP).forEach(type => {
+      Object.values(ACTUATOR_TYPE_MAP).forEach(type => {
         expect(type).toBeDefined();
         expect(Object.values(DeviceType)).toContain(type);
       });

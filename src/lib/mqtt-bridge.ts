@@ -184,6 +184,9 @@ export class MQTTBridge extends EventEmitter {
     const topics = [
       this.topic('devices/+/cmd'),
       this.topic('devices/+/position/set'),
+      this.topic('devices/+/open'),
+      this.topic('devices/+/close'),
+      this.topic('devices/+/stop'),
       this.topic('scenes/+/cmd'),
       this.topic('cmd')
     ];
@@ -234,6 +237,36 @@ export class MQTTBridge extends EventEmitter {
         } else {
           logger.warn('Invalid position value', { nodeId, payload });
         }
+        return;
+      }
+
+      // Device shortcut: {prefix}/devices/{nodeId}/open
+      const openMatch = topic.match(
+        new RegExp(`^${prefix}/devices/(\\d+)/open$`)
+      );
+      if (openMatch) {
+        const nodeId = parseInt(openMatch[1], 10);
+        this.emit('deviceCommand', nodeId, 'open');
+        return;
+      }
+
+      // Device shortcut: {prefix}/devices/{nodeId}/close
+      const closeMatch = topic.match(
+        new RegExp(`^${prefix}/devices/(\\d+)/close$`)
+      );
+      if (closeMatch) {
+        const nodeId = parseInt(closeMatch[1], 10);
+        this.emit('deviceCommand', nodeId, 'close');
+        return;
+      }
+
+      // Device shortcut: {prefix}/devices/{nodeId}/stop
+      const stopMatch = topic.match(
+        new RegExp(`^${prefix}/devices/(\\d+)/stop$`)
+      );
+      if (stopMatch) {
+        const nodeId = parseInt(stopMatch[1], 10);
+        this.emit('deviceCommand', nodeId, 'stop');
         return;
       }
 
