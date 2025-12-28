@@ -6,9 +6,9 @@
 echo "<INFO> KLF200 Plugin pre-uninstall starting..."
 
 # Backup configuration before uninstall so it can be restored on reinstall
-# Note: $LBPCONFIG already includes /klf200
+# LoxBerry environment variables point to PARENT directories, need to append plugin folder
 BACKUP_DIR="/tmp/klf200_backup"
-CONFIG_FILE="$LBPCONFIG/klf200.json"
+CONFIG_FILE="$LBPCONFIG/klf200/klf200.json"
 
 if [ -f "$CONFIG_FILE" ]; then
     echo "<INFO> Backing up configuration to $BACKUP_DIR..."

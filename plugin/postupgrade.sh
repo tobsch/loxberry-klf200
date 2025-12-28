@@ -3,11 +3,10 @@
 # KLF200 Plugin - Post-upgrade script
 # This runs after a plugin upgrade
 
-# Note: $LBPCONFIG, $LBPDATA, $LBPLOG already include /klf200
-# But $LBPHTMLAUTH is the parent directory, need to append plugin folder
-PLUGINDIR=$LBPCONFIG
-DATADIR=$LBPDATA
-LOGDIR=$LBPLOG
+# LoxBerry environment variables point to PARENT directories, need to append plugin folder
+PLUGINDIR=$LBPCONFIG/klf200
+DATADIR=$LBPDATA/klf200
+LOGDIR=$LBPLOG/klf200
 HTMLAUTHDIR=$LBPHTMLAUTH/klf200
 
 echo "<INFO> KLF200 Plugin post-upgrade starting..."
